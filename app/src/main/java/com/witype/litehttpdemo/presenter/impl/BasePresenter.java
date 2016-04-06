@@ -57,8 +57,9 @@ public class BasePresenter implements IBasePresenter {
     public void showWaitDialog(String message, final WaitCancelListener listener) {
         if (mIBaseView == null) return;
         if (mDialog == null) {
-            mDialog = new ProgressDialog(mIBaseView.getContext());
-        } else if (mDialog.isShowing()){
+            mDialog = new ProgressDialog(mIBaseView.getActivity());
+        }
+        if (mDialog.isShowing()){
             mDialog.setTitle(message);
         } else {
             mDialog.setTitle(message);
@@ -81,7 +82,7 @@ public class BasePresenter implements IBasePresenter {
 
     @Override
     public void showToast(String msg) {
-        Toast.makeText(mIBaseView.getContext(),msg,Toast.LENGTH_SHORT).show();
+        Toast.makeText(mIBaseView.getActivity(),msg,Toast.LENGTH_SHORT).show();
     }
 
     @Override

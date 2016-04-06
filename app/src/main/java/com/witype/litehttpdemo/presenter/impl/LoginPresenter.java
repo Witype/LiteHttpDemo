@@ -26,10 +26,10 @@ public class LoginPresenter extends BasePresenter implements ILoginPresenter {
         executeSync(new LoginModel(userName,pwd).setMyHttpListener(new MyHttpListener<BaseEntity>(this) {
 
             @Override
-            public void onSuccess(BaseEntity s, Response<BaseEntity> response) {
-                super.onSuccess(s, response);
+            public void onSuccessOk(BaseEntity s, Response<BaseEntity> response) {
+                super.onSuccessOk(s, response);
                 mILoginView.onLoginSuccess();
             }
-        }.disableToast()));
+        }));
     }
 }

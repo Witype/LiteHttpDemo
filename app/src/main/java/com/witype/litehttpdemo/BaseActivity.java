@@ -31,8 +31,8 @@ public class BaseActivity extends AppCompatActivity implements IBaseView {
     }
 
     @Override
-    public Context getContext() {
-        return getApplicationContext();
+    public Context getActivity() {
+        return this;
     }
 
     @Override
