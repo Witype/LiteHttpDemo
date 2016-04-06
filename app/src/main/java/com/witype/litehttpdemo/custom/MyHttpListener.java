@@ -1,5 +1,7 @@
 package com.witype.litehttpdemo.custom;
 
+import android.util.Log;
+
 import com.litesuits.http.exception.HttpClientException;
 import com.litesuits.http.exception.HttpException;
 import com.litesuits.http.exception.HttpNetException;
@@ -30,6 +32,8 @@ public class MyHttpListener<Data> extends HttpListener<Data> implements WaitCanc
 
     //任务结束后是否自动关闭等待框
     private boolean isAutoDismiss = true;
+
+    private boolean isInternalError;
 
     public MyHttpListener(IBasePresenter presenter) {
         this.presenter = presenter;
@@ -74,6 +78,7 @@ public class MyHttpListener<Data> extends HttpListener<Data> implements WaitCanc
     public void onStart(AbstractRequest<Data> request) {
         super.onStart(request);
         this.request = request;
+        Log.i(MyHttp.TAG,"开始请求:"+ request.getUri());
         if (isShowWait) presenter.showWaitDialog(title,this);
     }
 
@@ -84,7 +89,7 @@ public class MyHttpListener<Data> extends HttpListener<Data> implements WaitCanc
     }
 
     public void dismissWait() {
-        if (isShowWait && isAutoDismiss ) presenter.dismiss();
+        if (isShowWait && isAutoDismiss && !isInternalError) presenter.dismiss();
     }
 
     @Override
@@ -101,6 +106,7 @@ public class MyHttpListener<Data> extends HttpListener<Data> implements WaitCanc
     @Override
     public void onSuccess(Data s, Response<Data> response) {
         super.onSuccess(s, response);
+        isInternalError = false;
         if (presenter.isDestroy()) return;
         if (s instanceof BaseEntity) {
             BaseEntity ss = (BaseEntity) s;
@@ -132,8 +138,10 @@ public class MyHttpListener<Data> extends HttpListener<Data> implements WaitCanc
             showToast(((HttpNetException) e).getExceptionType().chiReason);
             onNetWorkError();
         } else if (e instanceof HttpClientException) {
-            showToast(((HttpClientException) e).getExceptionType().chiReason);
-            dismissWait();
+            isInternalError = true;
+            Log.i(MyHttp.TAG,"请求token过期:"+ "service internal error");
+//            showToast(((HttpClientException) e).getExceptionType().chiReason);
+//            dismissWait();
         } else if (e instanceof HttpServerException) {
             return;
         } else {

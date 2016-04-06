@@ -4,11 +4,11 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.widget.Toast;
 
-import com.litesuits.http.LiteHttp;
 import com.litesuits.http.request.AbstractRequest;
 import com.litesuits.http.request.param.HttpRichParamModel;
 import com.litesuits.http.response.Response;
 import com.witype.litehttpdemo.IBaseView.IBaseView;
+import com.witype.litehttpdemo.custom.MyHttp;
 import com.witype.litehttpdemo.custom.WaitCancelListener;
 import com.witype.litehttpdemo.presenter.IBasePresenter;
 
@@ -20,11 +20,11 @@ import java.util.ArrayList;
  */
 public class BasePresenter implements IBasePresenter {
 
-    private LiteHttp mLiteHttp;
-
     private IBaseView mIBaseView;
 
     private ProgressDialog mDialog;
+
+    private MyHttp http;
 
     private boolean isOnCreate;
 
@@ -32,7 +32,7 @@ public class BasePresenter implements IBasePresenter {
 
     public BasePresenter(IBaseView mIBaseView) {
         this.mIBaseView = mIBaseView;
-        mLiteHttp = LiteHttp.newApacheHttpClient(null);
+        http = new MyHttp();
     }
 
     @Override
@@ -43,9 +43,11 @@ public class BasePresenter implements IBasePresenter {
     @Override
     public void onDestroy() {
         this.isOnCreate = false;
+        if (mTask == null) return;
         for (AbstractRequest item : mTask) {
             item.cancel();
         }
+        mTask.clear();
     }
 
     @Override
@@ -106,6 +108,6 @@ public class BasePresenter implements IBasePresenter {
      * @param model 请求
      */
     public <T> void executeSync(HttpRichParamModel<T> model) {
-        mTask.add(mLiteHttp.executeAsync(model));
+        mTask.add(http.executeSync(model));
     }
 }

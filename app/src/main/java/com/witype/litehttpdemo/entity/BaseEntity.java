@@ -13,8 +13,8 @@ public class BaseEntity {
         return code;
     }
 
-    public void setCode(int code) {
-        this.code = code;
+    public void setCode(String code) {
+        this.code = Integer.parseInt(code);
     }
 
     public String getMessage() {
